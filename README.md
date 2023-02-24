@@ -1,38 +1,40 @@
-# create-svelte
-
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+# Installation
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+git clone https://github.com/lassewolpmann/obs-now-playing-spotify.git
 ```
+Make sure to have Docker installed.
 
-## Developing
+## Spotify Dashboard
+Register an application at https://developer.spotify.com/dashboard/applications.  
+You'll need the Client ID, Client Secret and set a Redirect URI in the Settings.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+## Setting up .env
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+nano .env
 ```
 
-## Building
+The .env file needs the following values:  
+SECRET_CLIENT_SECRET=  
+PUBLIC_CLIENT_ID=  
+PUBLIC_REDIRECT_URI=
 
-To create a production version of your app:
-
+## Running the application
 ```bash
-npm run build
+docker build . -t obs-now-playing-spotify
+docker run -p 3000:3000 -d obs-now-playing-spotify
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Checking the status of the application
+```bash
+docker ps
+```
+Copy the container ID
+```bash
+docker logs <ID>
+```
+The output should say
+```bash
+Listening on 0.0.0.0:3000
+Token expires at: ...
+```
