@@ -1,9 +1,9 @@
 <script>
     import { onDestroy, onMount } from "svelte";
+    import {invalidateAll} from "$app/navigation";
 
     export let data;
-    let accessToken;
-    $: accessToken = data.accessToken;
+    let accessToken= data.accessToken;
 
     let playbackStateInterval;
     let playbackData;
@@ -38,8 +38,9 @@
                 let playbackProgress = (playbackData['progress_ms'] / playbackData['item']['duration_ms']) * 100;
                 playbackProgressBar.style.width = playbackProgress + '%';
             }
-        } else {
+        } else if (statusCode === 401) {
             playbackData = undefined;
+            invalidateAll();
         }
     }
 

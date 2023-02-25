@@ -86,8 +86,6 @@ const tokenRefresher = async () => {
             tokenTimestamp.set(new Date().getTime());
 
             console.log('New token expires at: ' + new Date(new Date().getTime() + (refreshData['expires_in'] * 1000)));
-
-            throw redirect(307, '/');
         } else {
             console.log('Token refresh did not succeed.')
         }
