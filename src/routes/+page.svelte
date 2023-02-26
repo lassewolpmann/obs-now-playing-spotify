@@ -1,18 +1,28 @@
-<script>
+<script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import {invalidateAll} from "$app/navigation";
+    import { getPlaybackState } from "../lib/getPlaybackState.ts";
+    import { msToMinSec } from "../lib/msToMinSec";
 
     export let data;
-    let accessToken= data.accessToken;
+    let accessToken;
 
-    let playbackStateInterval;
-    let playbackData;
-    let playbackProgressBar;
+    $: {
+        accessToken = data.accessToken;
+        console.log('Access token: ' + accessToken);
+    }
+
+    let playbackStateInterval, playbackData, playbackProgressBar, playbackBackground, playbackDiv;
+    let albumCover, albumCanvas;
 
     onMount(() => {
         if (accessToken !== '') {
-            playbackStateInterval = setInterval(() => {
-                getPlaybackState()
+            playbackStateInterval = setInterval(async () => {
+                playbackData = await getPlaybackState(accessToken,
+                    playbackProgressBar,
+                    albumCover,
+                    albumCanvas,
+                    playbackBackground,
+                    playbackDiv);
             }, 1000)
         }
     })
@@ -20,45 +30,11 @@
     onDestroy(() => {
         clearInterval(playbackStateInterval);
     })
-
-    const getPlaybackState = async () => {
-        const req = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            }
-        })
-
-        const statusCode = req.status;
-
-        if (statusCode === 200) {
-            playbackData = await req.json();
-            if (playbackProgressBar) {
-                let playbackProgress = (playbackData['progress_ms'] / playbackData['item']['duration_ms']) * 100;
-                playbackProgressBar.style.width = playbackProgress + '%';
-            }
-        } else if (statusCode === 401) {
-            playbackData = undefined;
-            invalidateAll();
-        }
-    }
-
-    const msToMinutesAndSeconds = ms => {
-        const minutes = Math.floor(ms / 60000);
-        const seconds = ((ms % 60000) / 1000).toFixed(0);
-
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-    }
 </script>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
     *, *::before, *::after {
         box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-        color: #ddd;
     }
 
     .current-playback {
@@ -69,6 +45,8 @@
         width: 1600px;
         height: 400px;
         position: relative;
+        font-family: 'Poppins', sans-serif;
+        color: #fff;
     }
 
     .background {
@@ -98,13 +76,13 @@
         padding: 0 30px;
     }
 
-    .song-title {
+    .title {
         font-weight: 700;
         font-size: 60px;
     }
 
-    .song-artist {
-        font-weight: 400;
+    .artist {
+        font-weight: 500;
         font-size: 40px;
     }
 
@@ -121,6 +99,7 @@
         width: 100px;
         text-align: center;
         font-size: 30px;
+        font-weight: 500;
         flex: 1;
     }
 
@@ -139,7 +118,7 @@
 
     .background-bar {
         position: absolute;
-        background: #444;
+        background: #ababab;
         width: 100%;
         height: 24px;
         transform: translateY(-12px);
@@ -148,37 +127,43 @@
 
     .fill-bar {
         position: absolute;
-        background: #bbb;
-        width: 0;
+        background: none;
+        width: 2px;
         height: 24px;
-        transform: translateY(-12px);
+        transform: translate(-1px, -12px);
         border-radius: 12px;
         transition: width 0.5s ease;
     }
+
+    #canvas {
+        width: 0;
+        height: 0;
+    }
 </style>
 
+<canvas id="canvas" bind:this={albumCanvas}></canvas>
 {#if accessToken}
     {#if playbackData}
-        <div class="current-playback">
-            <div class="background"></div>
-            <img src="{playbackData['item']['album']['images'][1]['url']}" class="album-cover" alt="Album cover">
+        <div class="current-playback" bind:this={playbackDiv}>
+            <div class="background" bind:this={playbackBackground}></div>
+            <img crossorigin="anonymous" src="{playbackData['item']['album']['images'][1]['url']}" class="album-cover" alt="Album cover" bind:this={albumCover}>
             <div class="song-data">
-                <span class="song-title">{playbackData['item']['name']}</span>
-                <span class="song-artist">{playbackData['item']['artists'][0]['name']}</span>
+                <span class="title">{playbackData['item']['name']}</span>
+                <span class="artist">{playbackData['item']['artists'][0]['name']}</span>
                 <div class="song-progressbar">
-                    <span class="timer left">{msToMinutesAndSeconds(playbackData['progress_ms'])}</span>
+                    <span class="timer left">{msToMinSec(playbackData['progress_ms'])}</span>
                     <div class="bar">
                         <span class="background-bar"></span>
                         <span class="fill-bar" bind:this={playbackProgressBar}></span>
                     </div>
-                    <span class="timer right">{msToMinutesAndSeconds(playbackData['item']['duration_ms'])}</span>
+                    <span class="timer right">{msToMinSec(playbackData['item']['duration_ms'])}</span>
                 </div>
             </div>
         </div>
     {:else}
         <div class="current-playback">
             <div class="background"></div>
-            <div class="song-title">No playback.</div>
+            <div class="title">No playback.</div>
         </div>
     {/if}
 {:else}
