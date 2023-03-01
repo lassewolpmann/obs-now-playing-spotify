@@ -24,5 +24,16 @@ docker logs <ID>
 The output should say
 ```bash
 Listening on 0.0.0.0:3000
-Token expires at: ...
+Token expires at: (some date)
 ```
+
+## Using the overlay
+After setup, navigate to http://localhost:3000 in your browser and authorize yourself with Spotify.  
+You should now see the overlay in your browser.  
+  
+Go into OBS and add a new browser source with the following properties:
+* URL: http://localhost:3000/
+* Width: 1600
+* Height: 400
+
+Done!
