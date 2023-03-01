@@ -41,11 +41,12 @@ export const tokenRefresher = async () => {
             tokenType.set(refreshData['token_type']);
             scope.set(refreshData['scope']);
             expiresIn.set(refreshData['expires_in']);
+            refreshToken.set(refreshData['refresh_token']);
             tokenTimestamp.set(new Date().getTime());
 
             console.log('New token expires at: ' + new Date(new Date().getTime() + (refreshData['expires_in'] * 1000)));
         } else {
-            console.log('Token refresh did not succeed.')
+            console.log('Token refresh did not succeed.');
         }
     }
 }
