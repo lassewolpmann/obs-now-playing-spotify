@@ -6,3 +6,5 @@ export const scope = writable('');
 export const expiresIn = writable(0);
 export const refreshToken = writable('');
 export const tokenTimestamp = writable(0);
+export const state = writable('');
+export const codeVerifier = writable('');

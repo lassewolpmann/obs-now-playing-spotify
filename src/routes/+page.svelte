@@ -6,10 +6,7 @@
     export let data;
     let accessToken;
 
-    $: {
-        accessToken = data.accessToken;
-        console.log('Access token: ' + accessToken);
-    }
+    $: accessToken = data.accessToken;
 
     let playbackStateInterval, playbackData, playbackProgressBar, playbackBackground, playbackDiv;
     let albumCover, albumCanvas;
@@ -167,5 +164,5 @@
         </div>
     {/if}
 {:else}
-    <a href="/auth">Auth</a>
+    <a href={data.authURL}>Auth</a>
 {/if}
