@@ -12,6 +12,10 @@
     let albumCover, albumCanvas;
 
     onMount(() => {
+        if (albumCanvas) {
+            albumCanvas.style.display = 'none';
+        }
+
         if (accessToken !== '') {
             playbackStateInterval = setInterval(async () => {
                 playbackData = await getPlaybackState(accessToken,
@@ -30,6 +34,13 @@
 </script>
 
 <style>
+    :global(body) {
+        margin: 0;
+        padding: 0;
+        width: 1600px;
+        height: 400px;
+    }
+
     *, *::before, *::after {
         box-sizing: border-box;
     }
@@ -130,10 +141,6 @@
         transform: translate(-1px, -12px);
         border-radius: 12px;
         transition: width 0.5s ease;
-    }
-
-    #canvas {
-        display: none;
     }
 </style>
 
