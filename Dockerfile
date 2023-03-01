@@ -2,11 +2,9 @@
 FROM node:lts
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-
 COPY . .
-RUN npm build
+RUN npm install
+RUN npm run build
 
 EXPOSE 3000
-CMD ["ORIGIN=http://0.0.0.0:3000", "node", "build"]
+CMD ORIGIN=http://0.0.0.0:3000 node build

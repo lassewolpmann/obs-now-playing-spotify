@@ -1,0 +1,7 @@
+services:
+  spotify-obs-overlay:
+    image: obs-now-playing-spotify
+    container_name: obs-now-playing-spotify
+    build: .
+    ports:
+      - 3000:3000
