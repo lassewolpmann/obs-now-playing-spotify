@@ -2,13 +2,15 @@
 
 ```bash
 git clone https://github.com/lassewolpmann/obs-now-playing-spotify.git
+cd obs-now-playing-spotify/
 ```
-Make sure to have Docker installed.
 
 ## Running the application
+Make sure to have Docker installed.  
+  
+In the cloned directory:
 ```bash
-docker build . -t obs-now-playing-spotify
-docker run -p 3000:3000 -d obs-now-playing-spotify
+docker compose up -d
 ```
 
 ## Checking the status of the application
