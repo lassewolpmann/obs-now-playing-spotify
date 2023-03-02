@@ -37,6 +37,7 @@ body {
     width: 15%;
     height: auto;
     aspect-ratio: 1/1;
+    border-radius: 10px;
 }
 
 .song-data {
