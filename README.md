@@ -10,7 +10,7 @@ Make sure to have Docker installed.
   
 In the cloned directory:
 ```bash
-docker-compose build spotify-obs-overlay
+docker compose build spotify-obs-overlay
 docker compose up -d
 ```
 
