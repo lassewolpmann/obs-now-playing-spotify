@@ -2,6 +2,9 @@ services:
   spotify-obs-overlay:
     image: obs-now-playing-spotify
     container_name: obs-now-playing-spotify
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
     ports:
       - 3000:3000
