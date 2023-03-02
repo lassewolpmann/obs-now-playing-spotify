@@ -36,12 +36,12 @@
     })
 </script>
 <svelte:head>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </svelte:head>
-<canvas id="canvas" bind:this={albumCanvasEl} style="display: none;"></canvas>
+<canvas id="canvas" bind:this={albumCanvasEl}></canvas>
 {#if accessToken}
     {#if playbackData}
         <div class="current-playback" bind:this={playbackDivEl}>
