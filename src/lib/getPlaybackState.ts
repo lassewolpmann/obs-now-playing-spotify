@@ -8,7 +8,7 @@ export const getPlaybackState = (accessToken: string,
                                        background: HTMLElement,
                                        playbackDiv: HTMLElement) => {
 
-    return new Promise((resolve, reject) => fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+    return new Promise((resolve) => fetch('https://api.spotify.com/v1/me/player/currently-playing', {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
@@ -16,6 +16,9 @@ export const getPlaybackState = (accessToken: string,
         }
     }).then(res => {
         if (res.ok) {
+            return res.json();
+        } else if (res.status === 401) {
+            invalidateToken();
             return res.json();
         }
     }).then(resJson => {
