@@ -43,6 +43,8 @@ export const load: PageServerLoad = async ({url, fetch}) => {
             setInterval(tokenRefresher, 1000);
 
             throw redirect(307, '/');
+        } else {
+            console.log(await authReq.json())
         }
     } else {
         console.log(error);

@@ -8,22 +8,25 @@
 
     $: accessToken = data.accessToken;
 
-    let playbackStateInterval, playbackData, playbackProgressBar, playbackBackground, playbackDiv;
-    let albumCover, albumCanvas;
+    let playbackStateInterval, playbackData;
+    let albumCover, songTitle, songArtist, songDuration, songProgress;
+    let playbackProgressBarEl, playbackBackgroundEl, playbackDivEl, albumCoverEl, albumCanvasEl;
+
+    $: {
+        if (playbackData) {
+            albumCover = playbackData['item']['album']['images'][1]['url'];
+            songTitle = playbackData['item']['name'];
+            songArtist = playbackData['item']['artists'][0]['name'];
+            songDuration = msToMinSec(playbackData['item']['duration_ms']);
+            songProgress = msToMinSec(playbackData['progress_ms']);
+        }
+    }
 
     onMount(() => {
-        if (albumCanvas) {
-            albumCanvas.style.display = 'none';
-        }
-
-        if (accessToken !== '') {
-            playbackStateInterval = setInterval(async () => {
-                playbackData = await getPlaybackState(accessToken,
-                    playbackProgressBar,
-                    albumCover,
-                    albumCanvas,
-                    playbackBackground,
-                    playbackDiv);
+        if (accessToken) {
+            playbackStateInterval = setInterval(() => {
+                getPlaybackState(accessToken, playbackProgressBarEl, albumCoverEl, albumCanvasEl, playbackBackgroundEl, playbackDivEl)
+                    .then(res => playbackData = res);
             }, 1000)
         }
     })
@@ -32,134 +35,28 @@
         clearInterval(playbackStateInterval);
     })
 </script>
-
-<style>
-    :global(body) {
-        margin: 0;
-        padding: 0;
-        width: 1600px;
-        height: 400px;
-    }
-
-    *, *::before, *::after {
-        box-sizing: border-box;
-    }
-
-    .current-playback {
-        display: flex;
-        flex-direction: row;
-        padding: 25px;
-        align-items: center;
-        width: 1600px;
-        height: 400px;
-        position: relative;
-        font-family: 'Poppins', sans-serif;
-        color: #fff;
-    }
-
-    .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #222;
-        opacity: 0.9;
-        border-radius: 25px;
-        z-index: -1;
-    }
-
-    .album-cover {
-        width: 15%;
-        height: auto;
-        aspect-ratio: 1/1;
-    }
-
-    .song-data {
-        display: flex;
-        width: 85%;
-        flex-direction: column;
-        align-items: start;
-        justify-content: center;
-        padding: 0 30px;
-    }
-
-    .title {
-        font-weight: 700;
-        font-size: 60px;
-    }
-
-    .artist {
-        font-weight: 500;
-        font-size: 40px;
-    }
-
-    .song-progressbar {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        padding: 20px 0;
-    }
-
-    .timer {
-        width: 100px;
-        text-align: center;
-        font-size: 30px;
-        font-weight: 500;
-        flex: 1;
-    }
-
-    .timer.left {
-        text-align: left;
-    }
-
-    .timer.right {
-        text-align: right;
-    }
-
-    .bar {
-        flex: 12;
-        position: relative;
-    }
-
-    .background-bar {
-        position: absolute;
-        background: #ababab;
-        width: 100%;
-        height: 24px;
-        transform: translateY(-12px);
-        border-radius: 12px;
-    }
-
-    .fill-bar {
-        position: absolute;
-        background: none;
-        width: 2px;
-        height: 24px;
-        transform: translate(-1px, -12px);
-        border-radius: 12px;
-        transition: width 0.5s ease;
-    }
-</style>
-
-<canvas id="canvas" bind:this={albumCanvas}></canvas>
+<svelte:head>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</svelte:head>
+<canvas id="canvas" bind:this={albumCanvasEl} style="display: none;"></canvas>
 {#if accessToken}
     {#if playbackData}
-        <div class="current-playback" bind:this={playbackDiv}>
-            <div class="background" bind:this={playbackBackground}></div>
-            <img crossorigin="anonymous" src="{playbackData['item']['album']['images'][1]['url']}" class="album-cover" alt="Album cover" bind:this={albumCover}>
+        <div class="current-playback" bind:this={playbackDivEl}>
+            <div class="background" bind:this={playbackBackgroundEl}></div>
+            <img crossorigin="anonymous" src="{albumCover}" class="album-cover" alt="Album cover" bind:this={albumCoverEl}>
             <div class="song-data">
-                <span class="title">{playbackData['item']['name']}</span>
-                <span class="artist">{playbackData['item']['artists'][0]['name']}</span>
+                <span class="title">{songTitle}</span>
+                <span class="artist">{songArtist}</span>
                 <div class="song-progressbar">
-                    <span class="timer left">{msToMinSec(playbackData['progress_ms'])}</span>
+                    <span class="timer left">{songProgress}</span>
                     <div class="bar">
                         <span class="background-bar"></span>
-                        <span class="fill-bar" bind:this={playbackProgressBar}></span>
+                        <span class="fill-bar" bind:this={playbackProgressBarEl}></span>
                     </div>
-                    <span class="timer right">{msToMinSec(playbackData['item']['duration_ms'])}</span>
+                    <span class="timer right">{songDuration}</span>
                 </div>
             </div>
         </div>
