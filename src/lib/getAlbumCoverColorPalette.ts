@@ -138,8 +138,7 @@ const createLinearGradientBackground = (rgbValues: any) => {
     for (let i = 0; i < rgbValues.length; i++) {
         if (i > 0) {
             const colorDifference = calculateColorDifference(rgbValues[i], rgbValues[i - 1])
-
-            if (colorDifference < 120) {
+            if (colorDifference < 1000) {
                 continue;
             }
         }
@@ -148,17 +147,18 @@ const createLinearGradientBackground = (rgbValues: any) => {
     }
 
     let linearGradient = 'linear-gradient(90deg, ';
-    let startingColor = 1;
-    let maxColors = 3 + startingColor;
+    let startingColor = 3;
+    let maxColors = 2;
+    let endColor = startingColor + maxColors;
 
-    if (colorPalette.length < maxColors) {
+    if (colorPalette.length < endColor) {
         startingColor = 0;
-        maxColors = colorPalette.length;
+        endColor = 2;
     }
 
-    for (let i = startingColor; i < maxColors; i++) {
+    for (let i = startingColor; i < endColor; i++) {
         const rgbCode = 'rgb(' + colorPalette[i].r +  ', ' + colorPalette[i].g +  ', ' + colorPalette[i].b + ')';
-        if (i !== maxColors - 1) {
+        if (i !== endColor - 1) {
             linearGradient += (rgbCode + ', ');
         } else {
             linearGradient += (rgbCode + ')');
